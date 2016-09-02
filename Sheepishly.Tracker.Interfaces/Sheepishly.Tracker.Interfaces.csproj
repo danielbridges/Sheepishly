@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="ILocationReporter.cs" />
     <Compile Include="ILocationViewer.cs" />
+    <Compile Include="ISheepRemover.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TrackerConnectionFactory.cs" />

@@ -13,13 +13,31 @@
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Sheep.Interfaces;
 
-    internal sealed class Tracker : StatefulService, ILocationReporter, ILocationViewer
+    internal sealed class Tracker : StatefulService, ILocationReporter, ILocationViewer, ISheepRemover
     {
         protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
         {
             return new[] {
                 new ServiceReplicaListener(this.CreateServiceRemotingListener)
             };
+        }
+
+        public async Task<bool> Delete(Guid sheepId)
+        {
+            using (var tx = StateManager.CreateTransaction())
+            {
+                var timestamps = await StateManager.GetOrAddAsync<IReliableDictionary<Guid, DateTime>>("timestamps");
+                var sheepIds = await StateManager.GetOrAddAsync<IReliableDictionary<Guid, ActorId>>("sheepIds");
+
+                //delete sheep
+                await sheepIds.TryRemoveAsync(tx, sheepId);
+                //await //SheepConnectionFactory.GetSheep(sheepActorId).SetLocation(timestamp, location.Latitude, location.Longitude);
+
+                //remove timestamps for this sheep
+                await timestamps.TryRemoveAsync(tx, sheepId);
+                await tx.CommitAsync();
+                return true;
+            }
         }
 
         public async Task ReportLocation(Location location)
@@ -76,5 +94,7 @@
         public Tracker(StatefulServiceContext serviceContext, IReliableStateManagerReplica reliableStateManagerReplica) : base(serviceContext, reliableStateManagerReplica)
         {
         }
+
+        
     }
 }

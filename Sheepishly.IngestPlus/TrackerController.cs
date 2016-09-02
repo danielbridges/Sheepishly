@@ -23,6 +23,15 @@
             return true;
         }
 
+        [HttpPost]
+        [Route("killasheep")]
+        public async Task<bool> KillASheep(Guid sheepId)
+        {
+            var reporter = TrackerConnectionFactory.CreateSheepRemover();
+            var result = await reporter.Delete(sheepId);
+            return result;
+        }
+
         [HttpGet]
         [Route("sheep/{sheepId}/lastseen")]
         public async Task<DateTime?> LastSeen(Guid sheepId)

@@ -15,5 +15,10 @@
         {
             return ServiceProxy.Create<ILocationViewer>(LocationReporterServiceUrl, new ServicePartitionKey(0));
         }
+
+        public static ISheepRemover CreateSheepRemover()
+        {
+            return ServiceProxy.Create<ISheepRemover>(LocationReporterServiceUrl, new ServicePartitionKey(0));
+        }
     }
 }
